@@ -4,6 +4,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.1.32328.378
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Application", "Application\Application.vcxproj", "{F42A8D2A-2277-4C55-BD73-FB348D46C5CE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AC7DD448-7A02-4A59-86AA-574347EA66B6} = {AC7DD448-7A02-4A59-86AA-574347EA66B6}
+		{DF3B9AF7-FD52-4B5C-B94D-8DFB96C006B2} = {DF3B9AF7-FD52-4B5C-B94D-8DFB96C006B2}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LuaLib", "External\LuaLib\LuaLib.vcxproj", "{DF3B9AF7-FD52-4B5C-B94D-8DFB96C006B2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RayLib", "External\RayLib\RayLib.vcxproj", "{AC7DD448-7A02-4A59-86AA-574347EA66B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +29,22 @@ Global
 		{F42A8D2A-2277-4C55-BD73-FB348D46C5CE}.Release|x64.Build.0 = Release|x64
 		{F42A8D2A-2277-4C55-BD73-FB348D46C5CE}.Release|x86.ActiveCfg = Release|Win32
 		{F42A8D2A-2277-4C55-BD73-FB348D46C5CE}.Release|x86.Build.0 = Release|Win32
+		{DF3B9AF7-FD52-4B5C-B94D-8DFB96C006B2}.Debug|x64.ActiveCfg = Debug|x64
+		{DF3B9AF7-FD52-4B5C-B94D-8DFB96C006B2}.Debug|x64.Build.0 = Debug|x64
+		{DF3B9AF7-FD52-4B5C-B94D-8DFB96C006B2}.Debug|x86.ActiveCfg = Debug|Win32
+		{DF3B9AF7-FD52-4B5C-B94D-8DFB96C006B2}.Debug|x86.Build.0 = Debug|Win32
+		{DF3B9AF7-FD52-4B5C-B94D-8DFB96C006B2}.Release|x64.ActiveCfg = Release|x64
+		{DF3B9AF7-FD52-4B5C-B94D-8DFB96C006B2}.Release|x64.Build.0 = Release|x64
+		{DF3B9AF7-FD52-4B5C-B94D-8DFB96C006B2}.Release|x86.ActiveCfg = Release|Win32
+		{DF3B9AF7-FD52-4B5C-B94D-8DFB96C006B2}.Release|x86.Build.0 = Release|Win32
+		{AC7DD448-7A02-4A59-86AA-574347EA66B6}.Debug|x64.ActiveCfg = Debug|x64
+		{AC7DD448-7A02-4A59-86AA-574347EA66B6}.Debug|x64.Build.0 = Debug|x64
+		{AC7DD448-7A02-4A59-86AA-574347EA66B6}.Debug|x86.ActiveCfg = Debug|Win32
+		{AC7DD448-7A02-4A59-86AA-574347EA66B6}.Debug|x86.Build.0 = Debug|Win32
+		{AC7DD448-7A02-4A59-86AA-574347EA66B6}.Release|x64.ActiveCfg = Release|x64
+		{AC7DD448-7A02-4A59-86AA-574347EA66B6}.Release|x64.Build.0 = Release|x64
+		{AC7DD448-7A02-4A59-86AA-574347EA66B6}.Release|x86.ActiveCfg = Release|Win32
+		{AC7DD448-7A02-4A59-86AA-574347EA66B6}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
