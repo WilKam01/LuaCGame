@@ -1,5 +1,19 @@
 #include "Engine.h"
 
+void Engine::update()
+{
+	this->scene.updateSystems(GetFrameTime());
+}
+
+void Engine::render()
+{
+	BeginMode3D(Camera3D());
+
+	//DrawModelEx()
+
+	EndMode3D();
+}
+
 Engine::Engine(Vector2 dimensions):
 	dimensions(dimensions)
 {
