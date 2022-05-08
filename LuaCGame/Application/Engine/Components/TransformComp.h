@@ -2,7 +2,7 @@
 
 #include "raylib.h"
 #include "raymath.h"
-#include "../Lua/LuaHelper.h"
+#include "../Dev/LuaHelper.h"
 
 struct TransformComp
 {
@@ -25,15 +25,15 @@ static Vector3 lua_tovector(lua_State* L, int index)
 	}
 
 	lua_getfield(L, index, "x");
-	vec.x = lua_tonumber(L, -1);
+	vec.x = (float)lua_tonumber(L, -1);
 	lua_pop(L, 1);
 
 	lua_getfield(L, index, "y");
-	vec.y = lua_tonumber(L, -1);
+	vec.y = (float)lua_tonumber(L, -1);
 	lua_pop(L, 1);
 
 	lua_getfield(L, index, "z");
-	vec.z = lua_tonumber(L, -1);
+	vec.z = (float)lua_tonumber(L, -1);
 	lua_pop(L, 1);
 
 	return vec;
@@ -51,6 +51,9 @@ static void lua_pushvector(lua_State* L, const Vector3& vec)
 
 	lua_pushnumber(L, vec.z);
 	lua_setfield(L, -2, "z");
+
+	luaL_dofile(L, "Scripts/vector.lua");
+	lua_setmetatable(L, -2);
 }
 
 static TransformComp lua_totransform(lua_State* L, int index)

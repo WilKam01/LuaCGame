@@ -27,6 +27,9 @@
     <ClCompile Include="Engine\Systems\System.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Resources.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Engine.h">
@@ -35,7 +38,7 @@
     <ClInclude Include="Engine\Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Lua\LuaHelper.h">
+    <ClInclude Include="Engine\Dev\LuaHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Systems\System.h">
@@ -53,5 +56,15 @@
     <ClInclude Include="Engine\Components\MeshComp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Dev\StringHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Scripts\vector.lua" />
+    <None Include="Scripts\Scenes\scene.lua" />
   </ItemGroup>
 </Project>

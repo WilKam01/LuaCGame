@@ -166,6 +166,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Engine.cpp" />
+    <ClCompile Include="Engine\Resources.cpp" />
     <ClCompile Include="Engine\Scene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Systems\System.cpp" />
@@ -175,10 +176,16 @@
     <ClInclude Include="Engine\Components\Componentpch.h" />
     <ClInclude Include="Engine\Components\MeshComp.h" />
     <ClInclude Include="Engine\Components\TransformComp.h" />
+    <ClInclude Include="Engine\Dev\StringHelper.h" />
     <ClInclude Include="Engine\Engine.h" />
+    <ClInclude Include="Engine\Resources.h" />
     <ClInclude Include="Engine\Scene.h" />
-    <ClInclude Include="Engine\Lua\LuaHelper.h" />
+    <ClInclude Include="Engine\Dev\LuaHelper.h" />
     <ClInclude Include="Engine\Systems\System.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Scripts\Scenes\scene.lua" />
+    <None Include="Scripts\vector.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

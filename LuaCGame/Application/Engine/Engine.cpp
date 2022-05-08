@@ -2,33 +2,40 @@
 
 void Engine::update()
 {
+	if(IsKeyPressed(KEY_R))
+		this->scene.setScene(L, "scene.lua");
+
 	this->scene.updateSystems(GetFrameTime());
 }
 
 void Engine::render()
 {
-	BeginMode3D(Camera3D());
+	BeginDrawing();
+	ClearBackground(RAYWHITE);
 
-	//DrawModelEx()
+	this->scene.render();
 
-	EndMode3D();
+	int fontSize = 20;
+	std::string text = "Congrats! You created your first window!";
+	Vector2 size = MeasureTextEx(GetFontDefault(), text.c_str(), fontSize, 1);
+
+	DrawText(text.c_str(), (this->dimensions.x - size.x) / 2, (this->dimensions.y - size.y) / 2, fontSize, LIGHTGRAY);
+
+	EndDrawing();
 }
 
 Engine::Engine(Vector2 dimensions):
 	dimensions(dimensions)
 {
 	// Raylib
-	InitWindow(this->dimensions.x, this->dimensions.y, "Raylib Window");
+	InitWindow((int)this->dimensions.x, (int)this->dimensions.y, "Raylib Window");
 	SetTargetFPS(60);
 
 	this->L = luaL_newstate();
 	luaL_openlibs(L);
-	luaL_dostring(L, "print('Hello Lua!')");
+	Scene::lua_openscene(L, &this->scene);
 
-	lua_pushstring(L, "!");
-	lua_pushstring(L, "World");
-	lua_pushstring(L, "Hello");
-	LuaHelper::dumpStack(L);
+	this->scene.setScene(L, "scene.lua");
 }
 
 Engine::~Engine()
@@ -41,15 +48,7 @@ void Engine::run()
 {
 	while (!WindowShouldClose())
 	{
-		BeginDrawing();
-		ClearBackground(RAYWHITE);
-
-		int fontSize = 20;
-		std::string text = "Congrats! You created your first window!";
-		Vector2 size = MeasureTextEx(GetFontDefault(), text.c_str(), fontSize, 1);
-
-		DrawText(text.c_str(), (this->dimensions.x - size.x) / 2.0f, (this->dimensions.y - size.y) / 2.0f, fontSize, LIGHTGRAY);
-
-		EndDrawing();
+		this->update();
+		this->render();
 	}
 }

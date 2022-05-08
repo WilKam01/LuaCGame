@@ -1,8 +1,9 @@
 #include "Scene.h"
+#include "Dev/StringHelper.h"
 
 Scene::Scene()
 {
-	
+	this->setCamera(Vector3Zero(), { 0.0f, 0.0f, 1.0f }, 90.0f);
 }
 
 Scene::~Scene()
@@ -16,6 +17,7 @@ void Scene::lua_openscene(lua_State* L, Scene* scene)
 	lua_newtable(L);
 
 	luaL_Reg methods[] = {
+		{ "loadResource", lua_loadResource },
 		{ "createSystem", lua_createSystem },
 		{ "getEntityCount", lua_getEntityCount },
 		{ "entityValid", lua_entityValid },
@@ -35,7 +37,7 @@ void Scene::lua_openscene(lua_State* L, Scene* scene)
 	lua_newtable(L);
 	for (size_t i = 0; i < systemTypes.size(); i++)
 	{
-		lua_pushnumber(L, i);
+		lua_pushnumber(L, (int)i);
 		lua_setfield(L, -2, systemTypes[i].c_str());
 	}
 	lua_setglobal(L, "SystemType");
@@ -43,10 +45,44 @@ void Scene::lua_openscene(lua_State* L, Scene* scene)
 	lua_newtable(L);
 	for (size_t i = 0; i < compTypes.size(); i++)
 	{
-		lua_pushnumber(L, i);
+		lua_pushnumber(L, (int)i);
 		lua_setfield(L, -2, compTypes[i].c_str());
 	}
 	lua_setglobal(L, "ComponentType");
+}
+
+void Scene::setScene(lua_State* L, std::string path)
+{
+	this->reg.clear();
+	this->setCamera({ 0.0f, 5.0f, 0.0f }, { 0.0f, -1.0f, 0.0f }, 90.0f);
+
+	if (luaL_dofile(L, ("Scripts/Scenes/" + path).c_str()) != LUA_OK)
+		LuaHelper::dumpError(L);
+}
+
+void Scene::render()
+{
+	BeginMode3D(this->cam);
+
+	auto view = this->reg.view<TransformComp, MeshComp>();
+	view.each([&](const TransformComp& transform, const MeshComp& meshComp)
+	{
+		Model* model = this->resources.getModel(meshComp.modelName);
+		if (model)
+		{
+			Matrix matTranslation = MatrixTranslate(transform.position.x, transform.position.y, transform.position.z);
+			Matrix matRotation = MatrixRotateXYZ(Vector3Scale(transform.rotation, DEG2RAD));
+			Matrix matScale = MatrixScale(transform.scale.x, transform.scale.y, transform.scale.z);
+			Matrix matTransform = MatrixMultiply(MatrixMultiply(matScale, matRotation), matTranslation);
+
+			for (int i = 0; i < model->meshCount; i++)
+			{
+				DrawMesh(model->meshes[i], model->materials[model->meshMaterial[i]], matTransform);
+			}
+		}
+	});
+
+	EndMode3D();
 }
 
 void Scene::setCamera(Vector3 pos, Vector3 lookDir, float fov)
@@ -88,7 +124,7 @@ void Scene::updateSystems(float deltaTime)
 
 int Scene::getEntityCount() const
 {
-	return this->reg.alive();
+	return (int)this->reg.alive();
 }
 
 bool Scene::entityValid(int entity) const
@@ -99,7 +135,7 @@ bool Scene::entityValid(int entity) const
 int Scene::createEntity()
 {
 	int entity = (int)this->reg.create();
-	this->addComponent<Transform>(entity);
+	this->setComponent<TransformComp>(entity);
 	return entity;
 }
 
@@ -113,6 +149,24 @@ bool Scene::removeEntity(int entity)
 
 int Scene::lua_createSystem(lua_State* L)
 {
+	Scene* scene = (Scene*)lua_touserdata(L, lua_upvalueindex(1));
+	int type = (int)lua_tointeger(L, 1);
+
+	/*if (systemTypes.at(type) == "CleanUp")
+		scene->createSystem<CleanUp>();*/
+	/*else if (systemTypes.at(type) == "Info")
+		scene->createSystem<CleanUp>();*/
+
+	return 0;
+}
+
+int Scene::lua_loadResource(lua_State* L)
+{
+	Scene* scene = (Scene*)lua_touserdata(L, lua_upvalueindex(1));
+	std::string path = lua_tostring(L, 1);
+	std::string name = lua_tostring(L, 2);
+	scene->resources.loadModel(path, name);
+
 	return 0;
 }
 
@@ -126,7 +180,7 @@ int Scene::lua_getEntityCount(lua_State* L)
 int Scene::lua_entityValid(lua_State* L)
 {
 	Scene* scene = (Scene*)lua_touserdata(L, lua_upvalueindex(1));
-	lua_pushboolean(L, scene->entityValid(lua_tointeger(L, 1)));
+	lua_pushboolean(L, scene->entityValid((int)lua_tointeger(L, 1)));
 	return 1;
 }
 
@@ -140,27 +194,67 @@ int Scene::lua_createEntity(lua_State* L)
 int Scene::lua_removeEntity(lua_State* L)
 {
 	Scene* scene = (Scene*)lua_touserdata(L, lua_upvalueindex(1));
-	lua_pushboolean(L, scene->removeEntity(lua_tointeger(L, 1)));
+	lua_pushboolean(L, scene->removeEntity((int)lua_tointeger(L, 1)));
 	return 1;
 }
 
 int Scene::lua_hasComponent(lua_State* L)
 {
 	Scene* scene = (Scene*)lua_touserdata(L, lua_upvalueindex(1));
+	int entity = (int)lua_tointeger(L, 1);
+	int type = (int)lua_tointeger(L, 2);
+	bool hasComp = false;
+
+	if (compTypes.at(type) == "Transform")
+		hasComp = scene->hasComponents<TransformComp>(entity);
+	else if (compTypes.at(type) == "Behaviour")
+		hasComp = scene->hasComponents<Behaviour>(entity);
+
+	lua_pushboolean(L, hasComp);
 	return 1;
 }
 
 int Scene::lua_getComponent(lua_State* L)
 {
-	return 0;
+	Scene* scene = (Scene*)lua_touserdata(L, lua_upvalueindex(1));
+	int entity = (int)lua_tointeger(L, 1);
+	int type = (int)lua_tointeger(L, 2);
+
+	if (compTypes.at(type) == "Transform" && scene->hasComponents<TransformComp>(entity))
+		lua_pushtransform(L, scene->getComponent<TransformComp>(entity));
+	//else if (compTypes.at(type) == "Behaviour" && scene->hasComponents<Behaviour>(entity))
+	else
+		lua_pushnil(L);
+
+	return 1;
 }
 
 int Scene::lua_setComponent(lua_State* L)
 {
+	Scene* scene = (Scene*)lua_touserdata(L, lua_upvalueindex(1));
+	int entity = (int)lua_tointeger(L, 1);
+	int type = (int)lua_tointeger(L, 2);
+
+	if (compTypes.at(type) == "Transform")
+		scene->setComponent<TransformComp>(entity, lua_totransform(L, 3));
+	else if (compTypes.at(type) == "MeshComp")
+		scene->setComponent<MeshComp>(entity, lua_tostring(L, 3));
+	/*else if (compTypes.at(type) == "Behaviour")
+		scene->setComponent<Behaviour>(entity);*/
+
 	return 0;
 }
 
 int Scene::lua_removeComponent(lua_State* L)
 {
+	Scene* scene = (Scene*)lua_touserdata(L, lua_upvalueindex(1));
+	int entity = (int)lua_tointeger(L, 1);
+	int type = (int)lua_tointeger(L, 2);
+
+	if (compTypes.at(type) == "Transform" && scene->hasComponents<TransformComp>(entity))
+		scene->removeComponent<TransformComp>(entity);
+	else if (compTypes.at(type) == "Behaviour" && scene->hasComponents<Behaviour>(entity))
+		scene->removeComponent<Behaviour>(entity);
+
 	return 0;
 }

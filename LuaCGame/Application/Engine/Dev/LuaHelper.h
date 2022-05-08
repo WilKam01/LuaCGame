@@ -2,7 +2,6 @@
 
 #include <string>
 #include <iostream>
-#include <functional>
 #include <lua.hpp>
 
 namespace LuaHelper
