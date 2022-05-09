@@ -17,8 +17,11 @@ void Scene::lua_openscene(lua_State* L, Scene* scene)
 	lua_newtable(L);
 
 	luaL_Reg methods[] = {
-		{ "loadResource", lua_loadResource },
 		{ "createSystem", lua_createSystem },
+		{ "loadResource", lua_loadResource },
+		{ "setCamera", lua_setCamera },
+		{ "getCameraPos", lua_getCameraPos },
+		{ "setCameraPos", lua_setCameraPos },
 		{ "getEntityCount", lua_getEntityCount },
 		{ "entityValid", lua_entityValid },
 		{ "createEntity", lua_createEntity },
@@ -54,8 +57,6 @@ void Scene::lua_openscene(lua_State* L, Scene* scene)
 void Scene::setScene(lua_State* L, std::string path)
 {
 	this->reg.clear();
-	this->setCamera({ 0.0f, 5.0f, 0.0f }, { 0.0f, -1.0f, 0.0f }, 90.0f);
-
 	if (luaL_dofile(L, ("Scripts/Scenes/" + path).c_str()) != LUA_OK)
 		LuaHelper::dumpError(L);
 }
@@ -91,7 +92,7 @@ void Scene::setCamera(Vector3 pos, Vector3 lookDir, float fov)
 	this->cam.target = { pos.x + lookDir.x, pos.y + lookDir.y, pos.z + lookDir.z };
 	this->cam.fovy = fov;
 
-	float rad = PI * 0.5f;
+	float rad = 90.0f * DEG2RAD;
 	this->cam.up = { lookDir.x, lookDir.y * cos(rad) - lookDir.z * sin(rad), lookDir.y * sin(rad) + lookDir.z * cos(rad) };
 	this->cam.projection = CameraProjection::CAMERA_PERSPECTIVE;
 }
@@ -167,6 +168,32 @@ int Scene::lua_loadResource(lua_State* L)
 	std::string name = lua_tostring(L, 2);
 	scene->resources.loadModel(path, name);
 
+	return 0;
+}
+
+int Scene::lua_setCamera(lua_State* L)
+{
+	Scene* scene = (Scene*)lua_touserdata(L, lua_upvalueindex(1));
+	Vector3 pos = lua_tovector(L, 1);
+	Vector3 lookDir = lua_tovector(L, 2);
+	float fov = lua_tonumber(L, 3);
+	scene->setCamera(pos, lookDir, fov);
+
+	return 0;
+}
+
+int Scene::lua_getCameraPos(lua_State* L)
+{
+	Scene* scene = (Scene*)lua_touserdata(L, lua_upvalueindex(1));
+	lua_pushvector(L, scene->cam.position);
+	return 1;
+}
+
+int Scene::lua_setCameraPos(lua_State* L)
+{
+	Scene* scene = (Scene*)lua_touserdata(L, lua_upvalueindex(1));
+	Vector3 pos = lua_tovector(L, 1);
+	scene->cam.position = pos;
 	return 0;
 }
 

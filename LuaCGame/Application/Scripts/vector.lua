@@ -10,8 +10,8 @@ function vector.new(x, y, z)
 	return t
 end
 
-function vector:isvector()
-	return getmetatable(self) == vector
+function vector.isvector(t)
+	return getmetatable(t) == vector
 end
 
 function vector.__newindex(t, k, v)

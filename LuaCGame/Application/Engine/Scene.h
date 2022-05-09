@@ -30,6 +30,10 @@ private:
 	static int lua_createSystem(lua_State* L);
 	static int lua_loadResource(lua_State* L);
 
+	static int lua_setCamera(lua_State* L);
+	static int lua_getCameraPos(lua_State* L);
+	static int lua_setCameraPos(lua_State* L);
+
 	static int lua_getEntityCount(lua_State* L);
 	static int lua_entityValid(lua_State* L);
 	static int lua_createEntity(lua_State* L);

@@ -168,6 +168,7 @@
     <ClCompile Include="Engine\Engine.cpp" />
     <ClCompile Include="Engine\Resources.cpp" />
     <ClCompile Include="Engine\Scene.cpp" />
+    <ClCompile Include="Engine\Input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Systems\System.cpp" />
   </ItemGroup>
@@ -182,6 +183,7 @@
     <ClInclude Include="Engine\Scene.h" />
     <ClInclude Include="Engine\Dev\LuaHelper.h" />
     <ClInclude Include="Engine\Systems\System.h" />
+    <ClInclude Include="Engine\Input.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\Scenes\scene.lua" />

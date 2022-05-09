@@ -15,12 +15,6 @@ void Engine::render()
 
 	this->scene.render();
 
-	int fontSize = 20;
-	std::string text = "Congrats! You created your first window!";
-	Vector2 size = MeasureTextEx(GetFontDefault(), text.c_str(), fontSize, 1);
-
-	DrawText(text.c_str(), (this->dimensions.x - size.x) / 2, (this->dimensions.y - size.y) / 2, fontSize, LIGHTGRAY);
-
 	EndDrawing();
 }
 
@@ -34,6 +28,7 @@ Engine::Engine(Vector2 dimensions):
 	this->L = luaL_newstate();
 	luaL_openlibs(L);
 	Scene::lua_openscene(L, &this->scene);
+	Input::lua_openinput(L, &this->input);
 
 	this->scene.setScene(L, "scene.lua");
 }
