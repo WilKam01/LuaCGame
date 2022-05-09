@@ -20,10 +20,6 @@ end
 
 vector.__index = vector
 
-function vector:length ()
-	return math.sqrt(self.x * self.x + self.y * self.y + self.z * self.z)
-end
-
 function vector.__tostring(t)
 	return "(" .. t.x .. ", " .. t.y .. ", " .. t.z .. ")"
 end
@@ -59,11 +55,11 @@ function vector.__mul(a, b)
 end
 
 function vector.__div(a, b)
-	if (not vector.isvector(a) or not vector.isvector(b)) then
-		return
+	if (vector.isvector(a) and type(b) == "number") then
+		return vector.new(a.x / b, a.y / b, a.z / b)
+	elseif (vector.isvector(a) and vector.isvector(b)) then
+		return vector.new(a.x / b.x, a.y / b.y, a.z / b.z)
 	end
-	
-	return vector.new(a.x / b.x, a.y / b.y, a.z / b.z)
 end
 
 function vector.__eq(a, b)
@@ -72,6 +68,19 @@ function vector.__eq(a, b)
 	end
 
 	return a.x == b.x and a.y == b.y and a.z == b.z
+end
+
+function vector:length()
+	return math.sqrt(self.x * self.x + self.y * self.y + self.z * self.z)
+end
+
+function vector:normalize()
+	local l = self:length()
+	if(l == 0) then
+		return vector.new(0, 0, 0)
+	else
+		return self / l
+	end
 end
 
 return setmetatable(vector, {

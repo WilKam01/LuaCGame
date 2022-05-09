@@ -1,11 +1,9 @@
-local vector = require("Scripts/vector")
-
 scene.loadResource("suzanne.obj", "Suzanne")
-scene.setCamera(vector(0, 5, 0), vector(0, -1, 0), math.random(30, 90))
+scene.setCamera(vector(0, 5, 0), vector(90, 0, 0), math.random(30, 90))
 
 local gridSize = 10
 local offsetScalar = 3
-local offsetVec = vector(gridSize * offsetScalar * 0.5, gridSize * offsetScalar * 0.5, gridSize * offsetScalar * 0.5)
+local offsetVec = vector(1, 1, 1) * gridSize * offsetScalar * 0.5
 
 for x = 0, gridSize - 1 do
 	for z = 0, gridSize - 1 do
@@ -18,4 +16,5 @@ for x = 0, gridSize - 1 do
 	end
 end
 
-print(input.getCharPressed())
+local entity = scene.createEntity();
+scene.setComponent(entity, ComponentType.Behaviour, "player.lua")

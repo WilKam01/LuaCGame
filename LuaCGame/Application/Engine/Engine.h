@@ -12,6 +12,7 @@ private:
 	Input input;
 	lua_State* L;
 
+	void lua_openmetatables(lua_State* L);
 	void update();
 	void render();
 public:

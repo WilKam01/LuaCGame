@@ -3,7 +3,7 @@
 
 Scene::Scene()
 {
-	this->setCamera(Vector3Zero(), { 0.0f, 0.0f, 1.0f }, 90.0f);
+	this->setCamera(Vector3Zero(), Vector3Zero(), 90.0f);
 }
 
 Scene::~Scene()
@@ -19,9 +19,11 @@ void Scene::lua_openscene(lua_State* L, Scene* scene)
 	luaL_Reg methods[] = {
 		{ "createSystem", lua_createSystem },
 		{ "loadResource", lua_loadResource },
+		{ "setScene", lua_setScene },
 		{ "setCamera", lua_setCamera },
 		{ "getCameraPos", lua_getCameraPos },
 		{ "setCameraPos", lua_setCameraPos },
+		{ "getCameraRot", lua_getCameraRot },
 		{ "getEntityCount", lua_getEntityCount },
 		{ "entityValid", lua_entityValid },
 		{ "createEntity", lua_createEntity },
@@ -63,7 +65,7 @@ void Scene::setScene(lua_State* L, std::string path)
 
 void Scene::render()
 {
-	BeginMode3D(this->cam);
+	BeginMode3D(this->cam.cam3D);
 
 	auto view = this->reg.view<TransformComp, MeshComp>();
 	view.each([&](const TransformComp& transform, const MeshComp& meshComp)
@@ -86,25 +88,34 @@ void Scene::render()
 	EndMode3D();
 }
 
-void Scene::setCamera(Vector3 pos, Vector3 lookDir, float fov)
+void Scene::setCamera(Vector3 pos, Vector3 rotation, float fov)
 {
-	this->cam.position = pos;
-	this->cam.target = { pos.x + lookDir.x, pos.y + lookDir.y, pos.z + lookDir.z };
-	this->cam.fovy = fov;
+	this->cam.cam3D.position = pos;
+	this->cam.rotation = rotation;
+	this->cam.cam3D.fovy = fov;
+	this->cam.cam3D.projection = CameraProjection::CAMERA_PERSPECTIVE;
 
-	float rad = 90.0f * DEG2RAD;
-	this->cam.up = { lookDir.x, lookDir.y * cos(rad) - lookDir.z * sin(rad), lookDir.y * sin(rad) + lookDir.z * cos(rad) };
-	this->cam.projection = CameraProjection::CAMERA_PERSPECTIVE;
+	Vector3 forwardDir = { 0.0f, 0.0f, 1.0f };
+	Vector3 upDir = { 0.0f, 1.0f, 0.0f };
+	Quaternion quaternion = QuaternionFromEuler(rotation.x * DEG2RAD, rotation.y * DEG2RAD, rotation.z * DEG2RAD);
+
+	this->cam.cam3D.target = Vector3Add(pos, Vector3RotateByQuaternion(forwardDir, quaternion));
+	this->cam.cam3D.up = Vector3RotateByQuaternion(upDir, quaternion);
 }
 
 Vector3 Scene::getCameraPos() const
 {
-	return this->cam.position;
+	return this->cam.cam3D.position;
 }
 
 void Scene::setCameraPos(Vector3 pos)
 {
-	this->cam.position = pos;
+	this->setCamera(pos, this->cam.rotation, this->cam.cam3D.fovy);
+}
+
+void Scene::setCameraRot(Vector3 rot)
+{
+	this->setCamera(this->cam.cam3D.position, rot, this->cam.cam3D.fovy);
 }
 
 void Scene::updateSystems(float deltaTime)
@@ -171,13 +182,22 @@ int Scene::lua_loadResource(lua_State* L)
 	return 0;
 }
 
+int Scene::lua_setScene(lua_State* L)
+{
+	Scene* scene = (Scene*)lua_touserdata(L, lua_upvalueindex(1));
+	std::string path = lua_tostring(L, 1);
+	scene->setScene(L, path);
+
+	return 0;
+}
+
 int Scene::lua_setCamera(lua_State* L)
 {
 	Scene* scene = (Scene*)lua_touserdata(L, lua_upvalueindex(1));
 	Vector3 pos = lua_tovector(L, 1);
-	Vector3 lookDir = lua_tovector(L, 2);
+	Vector3 rot = lua_tovector(L, 2);
 	float fov = lua_tonumber(L, 3);
-	scene->setCamera(pos, lookDir, fov);
+	scene->setCamera(pos, rot, fov);
 
 	return 0;
 }
@@ -185,7 +205,7 @@ int Scene::lua_setCamera(lua_State* L)
 int Scene::lua_getCameraPos(lua_State* L)
 {
 	Scene* scene = (Scene*)lua_touserdata(L, lua_upvalueindex(1));
-	lua_pushvector(L, scene->cam.position);
+	lua_pushvector(L, scene->cam.cam3D.position);
 	return 1;
 }
 
@@ -193,8 +213,15 @@ int Scene::lua_setCameraPos(lua_State* L)
 {
 	Scene* scene = (Scene*)lua_touserdata(L, lua_upvalueindex(1));
 	Vector3 pos = lua_tovector(L, 1);
-	scene->cam.position = pos;
+	scene->setCameraPos(pos);
 	return 0;
+}
+
+int Scene::lua_getCameraRot(lua_State* L)
+{
+	Scene* scene = (Scene*)lua_touserdata(L, lua_upvalueindex(1));
+	lua_pushvector(L, scene->cam.rotation);
+	return 1;
 }
 
 int Scene::lua_getEntityCount(lua_State* L)
@@ -266,8 +293,36 @@ int Scene::lua_setComponent(lua_State* L)
 		scene->setComponent<TransformComp>(entity, lua_totransform(L, 3));
 	else if (compTypes.at(type) == "MeshComp")
 		scene->setComponent<MeshComp>(entity, lua_tostring(L, 3));
-	/*else if (compTypes.at(type) == "Behaviour")
-		scene->setComponent<Behaviour>(entity);*/
+	else if (compTypes.at(type) == "Behaviour")
+	{
+		if (scene->hasComponents<Behaviour>(entity))
+			scene->removeComponent<Behaviour>(entity);
+
+		std::string path = lua_tostring(L, 3);
+		if (luaL_dofile(L, ("Scripts/Behaviour/" + path).c_str()) != LUA_OK)
+			LuaHelper::dumpError(L);
+		else
+		{
+			lua_pushvalue(L, -1);
+			int luaRef = luaL_ref(L, LUA_REGISTRYINDEX);
+
+			lua_pushinteger(L, entity);
+			lua_setfield(L, -2, "ID");
+
+			lua_pushstring(L, path.c_str());
+			lua_setfield(L, -2, "path");
+
+			lua_getfield(L, -1, "init");
+			lua_pushvalue(L, -2);
+			if (lua_pcall(L, 1, 0, 0) != LUA_OK)
+				LuaHelper::dumpError(L);
+			else
+			{
+				scene->setComponent<Behaviour>(entity, path.c_str(), luaRef);
+				return 1;
+			}
+		}
+	}
 
 	return 0;
 }

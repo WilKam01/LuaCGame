@@ -52,7 +52,7 @@ static void lua_pushvector(lua_State* L, const Vector3& vec)
 	lua_pushnumber(L, vec.z);
 	lua_setfield(L, -2, "z");
 
-	luaL_dofile(L, "Scripts/vector.lua");
+	lua_getglobal(L, "vector");
 	lua_setmetatable(L, -2);
 }
 

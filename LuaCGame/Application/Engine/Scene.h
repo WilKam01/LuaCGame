@@ -6,6 +6,13 @@
 #include "Systems/System.h"
 #include "Resources.h"
 #include "Components/Componentpch.h";
+#include "Systems/Systempch.h"
+
+struct CameraStruct
+{
+	Camera3D cam3D;
+	Vector3 rotation;
+};
 
 class Scene
 {
@@ -13,7 +20,7 @@ private:
 	entt::registry reg;
 	Resources resources;
 	std::vector<System*> systems;
-	Camera3D cam;
+	CameraStruct cam;
 
 	inline static const std::vector<std::string> compTypes{
 		"Transform",
@@ -29,10 +36,12 @@ private:
 	// Lua wrappers
 	static int lua_createSystem(lua_State* L);
 	static int lua_loadResource(lua_State* L);
+	static int lua_setScene(lua_State* L);
 
 	static int lua_setCamera(lua_State* L);
 	static int lua_getCameraPos(lua_State* L);
 	static int lua_setCameraPos(lua_State* L);
+	static int lua_getCameraRot(lua_State* L);
 
 	static int lua_getEntityCount(lua_State* L);
 	static int lua_entityValid(lua_State* L);
@@ -53,9 +62,10 @@ public:
 	void setScene(lua_State* L, std::string path);
 	void render();
 
-	void setCamera(Vector3 pos, Vector3 lookDir, float fov);
+	void setCamera(Vector3 pos, Vector3 rotation, float fov);
 	Vector3 getCameraPos() const;
 	void setCameraPos(Vector3 pos);
+	void setCameraRot(Vector3 rot);
 
 	template <typename T, typename ...Args>
 	void createSystem(Args... args);

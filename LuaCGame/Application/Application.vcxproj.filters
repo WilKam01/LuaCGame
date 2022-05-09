@@ -24,9 +24,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Systems\System.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Resources.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -68,9 +65,16 @@
     <ClInclude Include="Engine\Input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Systems\BehaviourSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Systems\Systempch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\vector.lua" />
     <None Include="Scripts\Scenes\scene.lua" />
+    <None Include="Scripts\Behaviour\player.lua" />
   </ItemGroup>
 </Project>
