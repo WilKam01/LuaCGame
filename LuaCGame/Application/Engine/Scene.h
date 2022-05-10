@@ -62,6 +62,7 @@ public:
 	void setScene(lua_State* L, std::string path);
 	void render();
 
+	inline Resources& getResources() { return this->resources; }
 	void setCamera(Vector3 pos, Vector3 rotation, float fov);
 	Vector3 getCameraPos() const;
 	void setCameraPos(Vector3 pos);

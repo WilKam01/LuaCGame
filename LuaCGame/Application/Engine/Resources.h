@@ -12,6 +12,8 @@ public:
 	Resources();
 	virtual ~Resources();
 
+	void loadPrimitives();
+
 	bool hasModel(std::string name);
 	Model* getModel(std::string name);
 	void loadModel(std::string path, std::string name);

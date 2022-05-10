@@ -76,5 +76,6 @@
     <None Include="Scripts\vector.lua" />
     <None Include="Scripts\Scenes\scene.lua" />
     <None Include="Scripts\Behaviour\player.lua" />
+    <None Include="Scripts\Behaviour\bullet.lua" />
   </ItemGroup>
 </Project>

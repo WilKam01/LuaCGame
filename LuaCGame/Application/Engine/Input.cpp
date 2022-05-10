@@ -25,6 +25,7 @@ void Input::lua_openinput(lua_State* L, Input* input)
 		{ "isMouseButtonPressed", lua_isMouseButtonPressed },
 		{ "isMouseButtonReleased", lua_isMouseButtonReleased },
 		{ "getMousePosition", lua_getMousePosition },
+		{ "getMousePositionCenter", lua_getMousePositionCenter },
 		{ "getMouseDelta", lua_getMouseDelta },
 		{ "getMouseWheelMove", lua_getMouseWheelMove },
 		{ "setMouseCursor", lua_setMouseCursor },
@@ -133,6 +134,13 @@ int Input::lua_getMousePosition(lua_State* L)
 {
 	Vector2 pos = GetMousePosition();
 	lua_pushvector(L, { pos.x, pos.y, 0.0f });
+	return 1;
+}
+
+int Input::lua_getMousePositionCenter(lua_State* L)
+{
+	Vector2 pos = GetMousePosition();
+	lua_pushvector(L, { pos.x - GetScreenWidth() / 2, pos.y - GetScreenHeight() / 2, 0.0f});
 	return 1;
 }
 

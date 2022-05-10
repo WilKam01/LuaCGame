@@ -187,6 +187,7 @@
     <ClInclude Include="Engine\Systems\Systempch.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Scripts\Behaviour\bullet.lua" />
     <None Include="Scripts\Behaviour\player.lua" />
     <None Include="Scripts\Scenes\scene.lua" />
     <None Include="Scripts\vector.lua" />

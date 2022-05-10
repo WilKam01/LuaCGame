@@ -276,7 +276,8 @@ int Scene::lua_getComponent(lua_State* L)
 
 	if (compTypes.at(type) == "Transform" && scene->hasComponents<TransformComp>(entity))
 		lua_pushtransform(L, scene->getComponent<TransformComp>(entity));
-	//else if (compTypes.at(type) == "Behaviour" && scene->hasComponents<Behaviour>(entity))
+	else if (compTypes.at(type) == "Behaviour" && scene->hasComponents<Behaviour>(entity))
+		lua_rawgeti(L, LUA_REGISTRYINDEX, scene->getComponent<Behaviour>(entity).luaRef);
 	else
 		lua_pushnil(L);
 

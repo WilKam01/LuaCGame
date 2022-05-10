@@ -15,7 +15,7 @@ void Engine::update()
 void Engine::render()
 {
 	BeginDrawing();
-	ClearBackground(RAYWHITE);
+	ClearBackground(BLACK);
 
 	this->scene.render();
 
@@ -35,6 +35,7 @@ Engine::Engine(Vector2 dimensions):
 	Scene::lua_openscene(this->L, &this->scene);
 	Input::lua_openinput(this->L, &this->input);
 
+	this->scene.getResources().loadPrimitives();
 	this->scene.createSystem<BehaviourSystem>(this->L);
 	this->scene.setScene(this->L, "scene.lua");
 }

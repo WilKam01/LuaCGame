@@ -104,6 +104,7 @@ private:
     static int lua_isMouseButtonPressed(lua_State* L);
     static int lua_isMouseButtonReleased(lua_State* L);
     static int lua_getMousePosition(lua_State* L);
+    static int lua_getMousePositionCenter(lua_State* L);
     static int lua_getMouseDelta(lua_State* L);
     static int lua_getMouseWheelMove(lua_State* L);
     static int lua_setMouseCursor(lua_State* L);

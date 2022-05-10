@@ -31,7 +31,10 @@ public:
 
 			lua_getfield(L, -1, "update");
 			if (lua_type(L, -1) == LUA_TNIL)
+			{
+				lua_pop(L, 1);
 				return;
+			}
 
 			lua_pushvalue(L, -2);
 			lua_pushnumber(L, deltaTime);
