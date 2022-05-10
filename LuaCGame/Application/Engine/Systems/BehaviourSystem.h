@@ -17,7 +17,7 @@ public:
 	{
 		auto view = reg.view<Behaviour>();
 
-		view.each([&](Behaviour& script)
+		view.each([&](const Behaviour& script)
 		{
 			lua_rawgeti(L, LUA_REGISTRYINDEX, script.luaRef);
 			if (luaL_dofile(L, ("Scripts/Behaviour/" + std::string(script.path)).c_str()) != LUA_OK)

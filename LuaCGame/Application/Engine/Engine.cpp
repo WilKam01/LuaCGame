@@ -18,6 +18,7 @@ void Engine::render()
 	ClearBackground(BLACK);
 
 	this->scene.render();
+	DrawFPS(0, 0);
 
 	EndDrawing();
 }
@@ -37,6 +38,7 @@ Engine::Engine(Vector2 dimensions):
 
 	this->scene.getResources().loadPrimitives();
 	this->scene.createSystem<BehaviourSystem>(this->L);
+	this->scene.createSystem<CollisionSystem>(this->L, &this->scene.getResources());
 	this->scene.setScene(this->L, "scene.lua");
 }
 

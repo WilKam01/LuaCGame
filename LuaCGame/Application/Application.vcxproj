@@ -182,6 +182,7 @@
     <ClInclude Include="Engine\Scene.h" />
     <ClInclude Include="Engine\Dev\LuaHelper.h" />
     <ClInclude Include="Engine\Systems\BehaviourSystem.h" />
+    <ClInclude Include="Engine\Systems\CollisionSystem.h" />
     <ClInclude Include="Engine\Systems\System.h" />
     <ClInclude Include="Engine\Input.h" />
     <ClInclude Include="Engine\Systems\Systempch.h" />

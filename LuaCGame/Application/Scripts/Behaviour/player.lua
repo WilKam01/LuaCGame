@@ -23,7 +23,7 @@ function player:update(deltaTime)
 
 	dir = dir:normalize()
 	local transform = scene.getComponent(self.ID, ComponentType.Transform)
-	transform.position = transform.position + dir * speed * deltaTime
+	transform.position = transform.position + dir * self.speed * deltaTime
 	scene.setCameraPos(transform.position + vector(0, 5, 0))
 
 	local centerVec = input.getMousePositionCenter():normalize()
@@ -49,6 +49,10 @@ function player:update(deltaTime)
 	if(input.isKeyPressed(Keys.R)) then
 		scene.setScene("scene.lua")
 	end
+end
+
+function player:collision(other)
+	print(other.type)
 end
 
 return player
