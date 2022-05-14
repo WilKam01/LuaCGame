@@ -1,30 +1,44 @@
 local room = require("Scripts/room")
 local map = {}
 
-local directions = { vector(0, 0, 1), vector(0, 0, -1), vector(-1, 0, 0), vector(1, 0, 0) }
-
 map.playerID = 0
-map.startroom = room(9, 9, { vector(4, 1), vector(4, 9), vector(1, 4), vector(9, 4) })
-map.endroom = room(7, 7, { vector(3, 1), vector(3, 7), vector(1, 3), vector(7, 3) })
+map.startroom = room(9, 9, { vector(4, 1), vector(4, 9), vector(1, 4), vector(9, 4) }, {})
+map.endroom = room(7, 7, { vector(3, 1), vector(3, 7), vector(1, 3), vector(7, 3) }, {})
+map.roomCount = 10
 map.roomTemplates = {};
 map.rooms = {}
 map.curRoom = 0
 map.curRoomIndex = 0
+map.locked = true
 map.IDs = {}
+map.EnemyIDs = {}
+map.DoorIDs = {}
 
-map.roomTemplates[1] = room(5, 7, { vector(3, 1), vector(3, 7), vector(1, 3), vector(5, 3) })
+map.roomTemplates[1] = room(5, 7, { vector(3, 1), vector(3, 7), vector(1, 3), vector(5, 3) }, { vector(3, 4) })
 map.roomTemplates[2] = map.roomTemplates[1]
 
 function map:makelayout()
 	self.rooms = {}
+	self.startroom = room(self.startroom.width, self.startroom.height, self.startroom.doors, {})
+	self.endroom = room(self.endroom.width, self.endroom.height, self.endroom.doors, {})
+
 	self.rooms[1] = self.startroom
+	self.IDs = {}
+	self.EnemyIDs = {}
+	self.DoorIDs = {}
 
 	local i = 2
-	while(i <= 10) do
-		local newR = self.roomTemplates[math.random(1, #self.roomTemplates)]
-		self.rooms[i] = room(newR.width, newR.height, newR.doors)
+	while(i <= self.roomCount) do
+		local connectRoomIndex = 0
+		if (i == self.roomCount) then
+			self.rooms[i] = self.endroom
+			connectRoomIndex = math.random(2, i - 1)
+		else
+			local newR = self.roomTemplates[math.random(1, #self.roomTemplates)]
+			self.rooms[i] = room(newR.width, newR.height, newR.doors, newR.enemies)
+			connectRoomIndex = math.random(1, i - 1)
+		end
 
-		local connectRoomIndex = math.random(1, i - 1)
 		local ownDoor = math.random(1, #self.rooms[i].doors)
 		if (self.rooms[i].doors[ownDoor].z == 0) then
 			local r1 = self.rooms[i]
@@ -45,13 +59,10 @@ function map:makelayout()
 			end
 		end
 	end
-
-
 end
 
 function map:spawnroom(index)
 	local r = self.rooms[index]
-	r.IDs = {}
 	local offset = vector(r.width, 0, r.height) / 2 + vector(1, 0, 1) * 0.5
 	for x = 1, r.width do
 		for z = 1, r.height do
@@ -59,36 +70,64 @@ function map:spawnroom(index)
 			local transform = scene.getComponent(entity, ComponentType.Transform)
 			transform.position = vector(x, -1, z) - offset
 			if (r[x][z] == "Floor") then
-				scene.setComponent(entity, ComponentType.MeshComp, "Cube")
+				scene.setComponent(entity, ComponentType.MeshComp, "Floor")
 			elseif (r[x][z] == "Wall") then
-				scene.setComponent(entity, ComponentType.MeshComp, "Sphere")
+				scene.setComponent(entity, ComponentType.MeshComp, "Wall")
 			elseif (r[x][z] == "Door") then
-				for _, v in ipairs(r.doors) do
-					if(v.x == x and v.y == z and v.z == 0) then
-						scene.setComponent(entity, ComponentType.MeshComp, "Sphere")
-						r[x][z] = "Wall"
+				for i, v in ipairs(r.doors) do
+					if(v.x == x and v.y == z) then
+						if (v.z == 0) then
+							scene.setComponent(entity, ComponentType.MeshComp, "Wall")
+							r[x][z] = "Wall"
+							table.remove(r.doors, i)
+						else
+							scene.setComponent(entity, ComponentType.MeshComp, "Door")
+							table.insert(self.DoorIDs, entity)
+						end
 						break
 					end
 				end
+			elseif (r[x][z] == "Enemy") then
+				scene.setComponent(entity, ComponentType.MeshComp, "Floor")
+
+				local enemy = scene.createEntity();
+				local enemyTransform = scene.getComponent(enemy, ComponentType.Transform)
+				enemyTransform.position = transform.position + vector(0, 1, 0)
+				scene.setComponent(enemy, ComponentType.Transform, enemyTransform)
+
+				scene.setComponent(enemy, ComponentType.MeshComp, "Enemy")
+				scene.setComponent(enemy, ComponentType.Behaviour, "enemy.lua")
+
+				table.insert(self.EnemyIDs, enemy)
 			end
 			table.insert(self.IDs, entity)
 			scene.setComponent(entity, ComponentType.Transform, transform)
 		end
 	end
+	if (index == self.roomCount) then
+		local entity = scene.createEntity()
+		scene.setComponent(entity, ComponentType.MeshComp, "Goal")
+		table.insert(self.IDs, entity)
+	end
+
 	self.curRoom = r
 	self.curRoomIndex = index
-	print(self.curRoomIndex)
+	self.locked = true
 end
 
 function map:despawnroom(index)
 	for _, v in ipairs(self.IDs) do
 		scene.removeEntity(v)
 	end
+	for _, v in ipairs(self.EnemyIDs) do
+		scene.removeEntity(v)
+	end
 	self.IDs = {}
+	self.EnemyIDs = {}
+	self.DoorIDs = {}
 end
 
 function map:init()
-
 end
 
 function map:update()
@@ -100,9 +139,8 @@ function map:update()
 
 	-- Collision with wall (edge)
 	if(pos.x <= 1 or pos.z <= 1 or pos.x > self.curRoom.width - 1 or pos.z > self.curRoom.height - 1) then
-		
 		-- Collision with door
-		if(self.curRoom[pos.x][pos.z] == "Door") then
+		if(self.curRoom[pos.x][pos.z] == "Door" and self.locked == false) then
 			-- Find right door
 			for _, v in ipairs(self.curRoom.doors) do
 				if(v.x == pos.x and v.y == pos.z) then
@@ -125,8 +163,33 @@ function map:update()
 		else
 			playerTransform.position = playerTransform.position - player.lastMove
 		end
-		scene.setComponent(self.playerID, ComponentType.Transform, playerTransform)
 	end
+
+	for i, v in ipairs(self.EnemyIDs) do
+		if (not scene.entityValid(v)) then
+			table.remove(self.EnemyIDs, i)
+		end
+	end
+
+	if (#self.EnemyIDs == 0 and self.locked == true) then
+		self.locked = false
+		for _, v in ipairs(self.DoorIDs) do
+			scene.setComponent(v, ComponentType.MeshComp, "Floor")
+		end
+		for _, v in ipairs(self.curRoom.enemies) do
+			self.curRoom[v.x][v.y] = "Floor" 
+		end
+		self.curRoom.enemies = {}
+	end
+
+	-- Found goal
+	if (self.curRoomIndex == self.roomCount and pos.x == math.ceil(self.curRoom.width * 0.5) and pos.z == math.ceil(self.curRoom.height * 0.5)) then
+		self:despawnroom(self.curRoomIndex)
+		self:makelayout()
+		self:spawnroom(1)
+		playerTransform.position = vector()
+	end
+	scene.setComponent(self.playerID, ComponentType.Transform, playerTransform)
 end
 
 return map

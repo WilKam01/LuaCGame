@@ -15,6 +15,8 @@ void Resources::loadPrimitives()
 {
 	this->models.insert(std::pair<std::string, Model>("Cube", LoadModelFromMesh(GenMeshCube(1.0f, 0.5f, 1.0f))));
 	this->models.insert(std::pair<std::string, Model>("Sphere", LoadModelFromMesh(GenMeshSphere(0.5f, 16, 16))));
+	this->models.insert(std::pair<std::string, Model>("Bullet", LoadModelFromMesh(GenMeshSphere(0.1f, 16, 16))));
+	this->models["Bullet"].materials[0].maps[MaterialMapIndex::MATERIAL_MAP_ALBEDO].color = GRAY;
 	this->models.insert(std::pair<std::string, Model>("Cylinder", LoadModelFromMesh(GenMeshCylinder(1.0f, 2.0f, 16))));
 	this->models.insert(std::pair<std::string, Model>("Plane", LoadModelFromMesh(GenMeshPlane(1.0f, 1.0f, 1, 1))));
 }

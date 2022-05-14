@@ -30,12 +30,12 @@ public:
 					return;
 
 				BoundingBox box1 = GetModelBoundingBox(*model1);
-				box1.min = Vector3Add(box1.min, transform1.position);
-				box1.max = Vector3Add(box1.max, transform1.position);
+				box1.min = Vector3Add(Vector3Multiply(box1.min, transform1.scale), transform1.position);
+				box1.max = Vector3Add(Vector3Multiply(box1.max, transform1.scale), transform1.position);
 
 				BoundingBox box2 = GetModelBoundingBox(*model2);
-				box2.min = Vector3Add(box2.min, transform2.position);
-				box2.max = Vector3Add(box2.max, transform2.position);
+				box2.min = Vector3Add(Vector3Multiply(box2.min, transform2.scale), transform2.position);
+				box2.max = Vector3Add(Vector3Multiply(box2.max, transform2.scale), transform2.position);
 
 				if (&script1 == &script2 || !CheckCollisionBoxes(box1, box2))
 					return;

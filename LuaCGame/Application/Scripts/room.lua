@@ -1,10 +1,11 @@
 local room = {}
 
-function room.new(width, height, doors)
+function room.new(width, height, doors, enemies)
 	local t = {}
 	t.width = width
 	t.height = height
 	t.doors = {}
+	t.enemies = {}
 
 	for x = 1, width or 0 do
 		t[x] = {}
@@ -28,22 +29,13 @@ function room.new(width, height, doors)
 		t[v.x][v.y] = "Door"
 	end
 
-	setmetatable(t, room)
-	return t
-end
-
-function room.getdoor(r, num)
-	if (num == 1) then
-		return { r.doors[num], 0 }
-	elseif (num == 2) then
-		return { r.doors[num], r.height - 1 }
-	elseif (num == 3) then
-		return { 0, r.doors[num] }
-	elseif (num == 4) then
-		return {r.width - 1, r.doors[num]}
+	for _, v in ipairs(enemies) do
+		table.insert(t.enemies, vector(v.x, v.y, 0))
+		t[v.x][v.y] = "Enemy"
 	end
 
-	return
+	setmetatable(t, room)
+	return t
 end
 
 return setmetatable(room, {

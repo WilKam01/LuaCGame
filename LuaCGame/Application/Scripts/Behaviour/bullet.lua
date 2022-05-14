@@ -1,14 +1,14 @@
 local bullet = {}
 
 bullet.type = "Bullet"
-bullet.timer = 1
+bullet.timer = 0.25
 bullet.speed = 35
 bullet.damage = 0
 bullet.velocity = vector(0, 0, 1)
 
 function bullet:init()
 	print("Bullet fired! (ID: " .. self.ID .. ")")
-	scene.setComponent(self.ID, ComponentType.MeshComp, "Sphere")
+	scene.setComponent(self.ID, ComponentType.MeshComp, "Bullet")
 end
 
 function bullet:update(deltaTime)

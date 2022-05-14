@@ -16,8 +16,6 @@ function player:init()
 end
 
 function player:update(deltaTime)
-	--print("Player updated! (ID: " .. self.ID .. ") " .. deltaTime .. " sec")
-
 	local dir = vector(
 		boolToInt(input.isKeyDown(Keys.A)) - boolToInt(input.isKeyDown(Keys.D)), 0,
 		boolToInt(input.isKeyDown(Keys.W)) - boolToInt(input.isKeyDown(Keys.S)))
@@ -26,7 +24,7 @@ function player:update(deltaTime)
 	local transform = scene.getComponent(self.ID, ComponentType.Transform)
 	self.lastMove = dir * self.speed * deltaTime
 	transform.position = transform.position + self.lastMove
-	scene.setCameraPos(transform.position + vector(0, 3, 0))
+	scene.setCameraPos(transform.position + vector(0, 4, 0))
 
 	local centerVec = input.getMousePositionCenter():normalize()
 	transform.rotation = vector(0, math.acos(centerVec.x / centerVec:length()) * (180 / math.pi) + 90, 0)
@@ -36,7 +34,6 @@ function player:update(deltaTime)
 	end
 	local lookDir = vector(-centerVec.x, 0, -centerVec.y)
 
-	transform.scale = vector(1, 1, 1) * 0.25
 	scene.setComponent(self.ID, ComponentType.Transform, transform)
 
 	if(input.isMouseButtonPressed(Mouse.LEFT)) then
@@ -46,17 +43,13 @@ function player:update(deltaTime)
 		bullet.velocity = lookDir
 
 		local t = scene.getComponent(entity, ComponentType.Transform)
-		t.position = transform.position
+		t.position = transform.position + lookDir * 0.5
 		scene.setComponent(entity, ComponentType.Transform, t)
-	end
-
-	if(input.isKeyPressed(Keys.R)) then
-		scene.setScene("scene.lua")
 	end
 end
 
 function player:collision(other)
-	print(other.type)
+	--print(other.type)
 end
 
 return player

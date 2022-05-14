@@ -15,7 +15,7 @@ void Engine::update()
 void Engine::render()
 {
 	BeginDrawing();
-	ClearBackground(BLACK);
+	ClearBackground(GRAY);
 
 	this->scene.render();
 #ifdef _DEBUG

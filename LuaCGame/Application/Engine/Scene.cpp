@@ -77,6 +77,7 @@ void Scene::render()
 			Matrix matRotation = MatrixRotateXYZ(Vector3Scale(transform.rotation, DEG2RAD));
 			Matrix matScale = MatrixScale(transform.scale.x, transform.scale.y, transform.scale.z);
 			Matrix matTransform = MatrixMultiply(MatrixMultiply(matScale, matRotation), matTranslation);
+			DrawModelWiresEx(*model, transform.position, { 0.0f, 1.0f, 0.0f }, -transform.rotation.y, transform.scale, BLACK);
 
 			for (int i = 0; i < model->meshCount; i++)
 			{
@@ -314,6 +315,12 @@ int Scene::lua_setComponent(lua_State* L)
 			lua_setfield(L, -2, "path");
 
 			lua_getfield(L, -1, "init");
+			if (lua_type(L, -1) == LUA_TNIL)
+			{
+				lua_pop(L, 1);
+				return 0;
+			}
+
 			lua_pushvalue(L, -2);
 			if (lua_pcall(L, 1, 0, 0) != LUA_OK)
 				LuaHelper::dumpError(L);
@@ -334,10 +341,10 @@ int Scene::lua_removeComponent(lua_State* L)
 	int entity = (int)lua_tointeger(L, 1);
 	int type = (int)lua_tointeger(L, 2);
 
-	if (compTypes.at(type) == "Transform" && scene->hasComponents<TransformComp>(entity))
-		scene->removeComponent<TransformComp>(entity);
-	else if (compTypes.at(type) == "Behaviour" && scene->hasComponents<Behaviour>(entity))
+	if (compTypes.at(type) == "Behaviour" && scene->hasComponents<Behaviour>(entity))
 		scene->removeComponent<Behaviour>(entity);
+	else if (compTypes.at(type) == "MeshComp" && scene->hasComponents<MeshComp>(entity))
+		scene->removeComponent<MeshComp>(entity);
 
 	return 0;
 }
