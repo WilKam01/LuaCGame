@@ -80,5 +80,8 @@
     <None Include="Scripts\Scenes\scene.lua" />
     <None Include="Scripts\Behaviour\player.lua" />
     <None Include="Scripts\Behaviour\bullet.lua" />
+    <None Include="Scripts\Behaviour\map.lua" />
+    <None Include="Scripts\Behaviour\tile.lua" />
+    <None Include="Scripts\room.lua" />
   </ItemGroup>
 </Project>

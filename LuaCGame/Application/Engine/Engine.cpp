@@ -18,7 +18,9 @@ void Engine::render()
 	ClearBackground(BLACK);
 
 	this->scene.render();
+#ifdef _DEBUG
 	DrawFPS(0, 0);
+#endif // DEBUG
 
 	EndDrawing();
 }

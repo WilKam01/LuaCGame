@@ -3,6 +3,7 @@ local bullet = {}
 bullet.type = "Bullet"
 bullet.timer = 1
 bullet.speed = 35
+bullet.damage = 0
 bullet.velocity = vector(0, 0, 1)
 
 function bullet:init()
@@ -18,6 +19,12 @@ function bullet:update(deltaTime)
 
 	self.timer = self.timer - deltaTime
 	if(self.timer <= 0) then
+		scene.removeEntity(self.ID)
+	end
+end
+
+function bullet:collision(other)
+	if(other.type ~= "Player") then
 		scene.removeEntity(self.ID)
 	end
 end

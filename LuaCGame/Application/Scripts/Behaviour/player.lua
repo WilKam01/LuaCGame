@@ -1,7 +1,8 @@
 local player = {}
 
 player.type = "Player"
-player.speed = 25
+player.speed = 10
+player.lastMove = vector(0, 0, 0)
 
 function boolToInt(t)
 	if(t) then
@@ -23,8 +24,9 @@ function player:update(deltaTime)
 
 	dir = dir:normalize()
 	local transform = scene.getComponent(self.ID, ComponentType.Transform)
-	transform.position = transform.position + dir * self.speed * deltaTime
-	scene.setCameraPos(transform.position + vector(0, 5, 0))
+	self.lastMove = dir * self.speed * deltaTime
+	transform.position = transform.position + self.lastMove
+	scene.setCameraPos(transform.position + vector(0, 3, 0))
 
 	local centerVec = input.getMousePositionCenter():normalize()
 	transform.rotation = vector(0, math.acos(centerVec.x / centerVec:length()) * (180 / math.pi) + 90, 0)
@@ -33,6 +35,8 @@ function player:update(deltaTime)
 		transform.rotation.y = 180 - transform.rotation.y
 	end
 	local lookDir = vector(-centerVec.x, 0, -centerVec.y)
+
+	transform.scale = vector(1, 1, 1) * 0.25
 	scene.setComponent(self.ID, ComponentType.Transform, transform)
 
 	if(input.isMouseButtonPressed(Mouse.LEFT)) then
