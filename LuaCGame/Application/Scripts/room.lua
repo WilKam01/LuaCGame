@@ -38,6 +38,50 @@ function room.new(width, height, doors, enemies)
 	return t
 end
 
+function room.newFromFile(path)
+	local f = io.open(path, "r")
+	-- Make sure file exist
+	if (not f) then 
+		return 
+	else
+		f:close()
+	end
+
+	local width = 0
+	local height = 0
+	local doors = {}
+	local enemies = {}
+	for line in io.lines(path) do
+		height = height + 1
+		width = #line
+		for i = 1, #line do
+			local c = line:sub(i, i)
+			if (c == '+') then -- Door
+				table.insert(doors, vector(i, height, 0))
+			elseif (c == '*') then -- Enemy
+				table.insert(enemies, vector(i, height, 0))
+			end
+		end
+	end
+
+	print(width)
+	print(height)
+	for _, v in ipairs(doors) do
+		v.x = width - v.x + 1
+		v.y = height - v.y + 1
+	end
+	for _, v in ipairs(enemies) do
+		v.x = width - v.x + 1
+		v.y = height - v.y + 1
+	end
+
+	return room.new(width, height, doors, enemies)
+end
+
+function room.writeToFile(r, path)
+
+end
+
 return setmetatable(room, {
 	__call = function(_, ...)
 	return room.new(...)

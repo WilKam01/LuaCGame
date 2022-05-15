@@ -5,7 +5,7 @@ map.playerID = 0
 map.startroom = room(9, 9, { vector(4, 1), vector(4, 9), vector(1, 4), vector(9, 4) }, {})
 map.endroom = room(7, 7, { vector(3, 1), vector(3, 7), vector(1, 3), vector(7, 3) }, {})
 map.roomCount = 10
-map.roomTemplates = {};
+map.template = room(6, 6, { vector(3, 1), vector(3, 6), vector(1, 3), vector(6, 3) }, { vector(3, 3) })
 map.rooms = {}
 map.curRoom = 0
 map.curRoomIndex = 0
@@ -13,9 +13,6 @@ map.locked = true
 map.IDs = {}
 map.EnemyIDs = {}
 map.DoorIDs = {}
-
-map.roomTemplates[1] = room(5, 7, { vector(3, 1), vector(3, 7), vector(1, 3), vector(5, 3) }, { vector(3, 4) })
-map.roomTemplates[2] = map.roomTemplates[1]
 
 function map:makelayout()
 	self.rooms = {}
@@ -128,10 +125,19 @@ function map:despawnroom(index)
 end
 
 function map:init()
+	self.roomTemplates = {}
+	table.insert(self.roomTemplates, self.template)
+	local r = room.newFromFile("../Resources/Rooms/1.room")
+	local counter = 2
+
+	while(r ~= nil) do
+		table.insert(self.roomTemplates, r)
+		r = room.newFromFile("../Resources/Rooms/" .. tostring(counter) .. ".room")
+		counter = counter + 1
+	end
 end
 
 function map:update()
-
 	local player = scene.getComponent(self.playerID, ComponentType.Behaviour)
 	local playerTransform = scene.getComponent(self.playerID, ComponentType.Transform)
 	local pos = playerTransform.position + vector(self.curRoom.width, 0, self.curRoom.height) / 2 - vector(1, 0, 1) * 0.5
