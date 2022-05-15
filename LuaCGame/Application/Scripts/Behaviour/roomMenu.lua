@@ -4,8 +4,8 @@ local menu = {}
 function menu:init()
 	self.bColour = vector(162, 237, 255)
 	self.bHoverColour = vector(212, 247, 255)
-	self.minTiles = 5
-	self.maxTiles = 15
+	self.minTiles = 7
+	self.maxTiles = 21
 
 	self.gridState = {}
 	self.gridState.Floor = 1
@@ -15,8 +15,8 @@ function menu:init()
 	self.gColour = { vector(235, 235, 235), vector(25, 25, 255), vector(255, 25, 25), vector(255, 255, 0) }
 	self.gHoverColour = { vector(255, 255, 255), vector(100, 100, 255), vector(255, 100, 100), vector(255, 255, 150) }
 
-	self.width = 5
-	self.height = 5
+	self.width = self.minTiles
+	self.height = self.minTiles
 	self.grids = {}
 	self.grids.IDs = {}
 	self.grids.states = {}
@@ -28,12 +28,13 @@ function menu:init()
 	element.position = vector(220, 10)
 	element.dimensions = vector(400, 50)
 	element.colour = vector(50, 50, 50)
+	element.fontSize = 36
 
 	-- Width slider
 	self.sliders[1] = {}
 
 	element.visibleBG = false
-	element.text = "width: 5"
+	element.text = "width: " .. tostring(self.minTiles)
 	self.sliders[1].text = scene.createEntity()
 	scene.setComponent(self.sliders[1].text, ComponentType.UIElement, element)
 
@@ -54,7 +55,7 @@ function menu:init()
 
 	element.position.x = 660
 	element.visibleBG = false
-	element.text = "height: 5"
+	element.text = "height: " .. tostring(self.minTiles)
 	self.sliders[2].text = scene.createEntity()
 	scene.setComponent(self.sliders[2].text, ComponentType.UIElement, element)
 
@@ -226,6 +227,7 @@ function menu:spawnGrid()
 	element.position = vector(pos.x, pos.y)
 	element.dimensions = vector(cellSize, cellSize)
 	element.colour = vector(255, 255, 255)
+	element.fontSize = 36
 
 	for y = 1, self.height do
 		for x = 1, self.width do

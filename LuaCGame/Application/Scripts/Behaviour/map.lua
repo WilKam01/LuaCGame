@@ -5,7 +5,7 @@ map.playerID = 0
 map.startroom = room(9, 9, { vector(4, 1), vector(4, 9), vector(1, 4), vector(9, 4) }, {})
 map.endroom = room(7, 7, { vector(3, 1), vector(3, 7), vector(1, 3), vector(7, 3) }, {})
 map.roomCount = 10
-map.template = room(6, 6, { vector(3, 1), vector(3, 6), vector(1, 3), vector(6, 3) }, { vector(3, 3) })
+map.template = room(9, 9, { vector(5, 1), vector(5, 9), vector(1, 5), vector(9, 5) }, { vector(5, 5) })
 map.rooms = {}
 map.curRoom = 0
 map.curRoomIndex = 0
@@ -90,10 +90,12 @@ function map:spawnroom(index)
 				local enemy = scene.createEntity();
 				local enemyTransform = scene.getComponent(enemy, ComponentType.Transform)
 				enemyTransform.position = transform.position + vector(0, 1, 0)
-				scene.setComponent(enemy, ComponentType.Transform, enemyTransform)
 
+				scene.setComponent(enemy, ComponentType.Transform, enemyTransform)
 				scene.setComponent(enemy, ComponentType.MeshComp, "Enemy")
 				scene.setComponent(enemy, ComponentType.Behaviour, "enemy.lua")
+				scene.getComponent(enemy, ComponentType.Behaviour).playerID = self.playerID
+				scene.getComponent(enemy, ComponentType.Behaviour).mapID = self.ID
 
 				table.insert(self.EnemyIDs, enemy)
 			end
@@ -135,10 +137,124 @@ function map:init()
 		r = room.newFromFile("../Resources/Rooms/" .. tostring(counter) .. ".room")
 		counter = counter + 1
 	end
+
+	local element = {}
+	element.visibleBG = false
+	element.text = "1"
+	element.position = vector(0, 0)
+	element.dimensions = vector(100, 100)
+	element.colour = vector(255, 255, 255)
+	element.fontSize = 72
+
+	-- Current level text
+	self.curLevel = 1
+	self.levelDisplay = scene.createEntity()
+	scene.setComponent(self.levelDisplay, ComponentType.UIElement, element)
+
+	element.visibleBG = true
+	element.text = ""
+	element.position = vector(340, 650)
+	element.dimensions = vector(600, 35)
+	element.colour = vector(255, 0, 0)
+
+	-- Healthbar
+	self.healthbar = scene.createEntity()
+	scene.setComponent(self.healthbar, ComponentType.UIElement, element)
+
+	element.colour = vector(50, 50, 50)
+	self.healthBG = scene.createEntity()
+	scene.setComponent(self.healthBG, ComponentType.UIElement, element)
+
+	-- Intermediate menu (for pause and gameover)
+	self.paused = false
+	self.intMenu = scene.createEntity()
+	scene.setComponent(self.intMenu, ComponentType.Behaviour, "intMenu.lua")
 end
 
 function map:update()
+	local menu = scene.getComponent(self.intMenu, ComponentType.Behaviour)
 	local player = scene.getComponent(self.playerID, ComponentType.Behaviour)
+
+	-- Update slider
+	local slider = scene.getComponent(self.healthbar, ComponentType.UIElement)
+	local sliderBG = scene.getComponent(self.healthBG, ComponentType.UIElement)
+	slider.dimensions.x = sliderBG.dimensions.x * (player.health / 100)
+	scene.setComponent(self.healthbar, ComponentType.UIElement, slider)
+
+	if (self.paused) then
+		local button = scene.getComponent(menu.resumeButton, ComponentType.UIElement)
+		if (UI.isHover(button) and input.isMouseButtonPressed(Mouse.LEFT) and player.health > 0) then
+			self.paused = false
+			menu:destroy()
+		elseif (UI.isHover(button) and input.isMouseButtonPressed(Mouse.LEFT) and player.health <= 0) then
+			scene.setScene("gameScene.lua")
+			return
+		end
+	elseif (player.health <= 0) then
+		self.paused = true
+		local element = {}
+		element.visibleBG = false
+		element.text = "You reached level: " .. tostring(self.curLevel)
+		element.position = vector(500, 150)
+		element.dimensions = vector(200, 100)
+		element.colour = vector(255, 255, 255)
+		element.fontSize = 64
+		local entity = scene.createEntity()
+		scene.setComponent(entity, ComponentType.UIElement, element)
+
+		menu:spawn("Game Over")
+		element = scene.getComponent(menu.resumeButton, ComponentType.UIElement)
+		element.text = "Play again"
+		scene.setComponent(menu.resumeButton, ComponentType.UIElement, element)
+
+		-- "Remove" Game UI
+		element = scene.getComponent(self.levelDisplay, ComponentType.UIElement)
+		element.position = vector(-100, -100)
+		scene.setComponent(self.levelDisplay, ComponentType.UIElement, element)
+		element = scene.getComponent(self.healthbar, ComponentType.UIElement)
+		element.position = vector(-100, -100)
+		scene.setComponent(self.healthbar, ComponentType.UIElement, element)
+		element = scene.getComponent(self.healthBG, ComponentType.UIElement)
+		element.position = vector(-100, -100)
+		scene.setComponent(self.healthBG, ComponentType.UIElement, element)
+	end
+
+	if (input.isKeyPressed(Keys.P) and player.health > 0) then
+		self.paused = not self.paused
+
+		if (self.paused) then
+			menu:spawn("Paused")
+
+			-- "Remove" Game UI
+			local element = scene.getComponent(self.levelDisplay, ComponentType.UIElement)
+			element.position = vector(-100, -100)
+			scene.setComponent(self.levelDisplay, ComponentType.UIElement, element)
+			element = scene.getComponent(self.healthbar, ComponentType.UIElement)
+			element.position = vector(-100, -100)
+			scene.setComponent(self.healthbar, ComponentType.UIElement, element)
+			element = scene.getComponent(self.healthBG, ComponentType.UIElement)
+			element.position = vector(-100, -100)
+			scene.setComponent(self.healthBG, ComponentType.UIElement, element)
+		else
+			menu:destroy()
+
+			-- Put back Game UI
+			local element = scene.getComponent(self.levelDisplay, ComponentType.UIElement)
+			element.position = vector(0, 0)
+			scene.setComponent(self.levelDisplay, ComponentType.UIElement, element)
+			element = scene.getComponent(self.healthbar, ComponentType.UIElement)
+			element.position = vector(340, 650)
+			scene.setComponent(self.healthbar, ComponentType.UIElement, element)
+			element = scene.getComponent(self.healthBG, ComponentType.UIElement)
+			element.position = vector(340, 650)
+			scene.setComponent(self.healthBG, ComponentType.UIElement, element)
+		end
+	end
+
+	if (self.paused) then
+		return
+	end
+	
 	local playerTransform = scene.getComponent(self.playerID, ComponentType.Transform)
 	local pos = playerTransform.position + vector(self.curRoom.width, 0, self.curRoom.height) / 2 - vector(1, 0, 1) * 0.5
 	pos = vector(math.floor(pos.x + 0.5), 0, math.floor(pos.z + 0.5)) + vector(1, 0, 1)
@@ -155,6 +271,7 @@ function map:update()
 					for __, v1 in ipairs(self.rooms[v.z].doors) do
 						if(v1.z == self.curRoomIndex) then
 							spawnPos = vector(v1.x, 0, v1.y) + player.lastMove * 5
+							player.damageCooldown = 1
 							break
 						end
 					end
@@ -171,12 +288,14 @@ function map:update()
 		end
 	end
 
+	-- Clean enemy ID table
 	for i, v in ipairs(self.EnemyIDs) do
 		if (not scene.entityValid(v)) then
 			table.remove(self.EnemyIDs, i)
 		end
 	end
 
+	-- Enemies are all dead
 	if (#self.EnemyIDs == 0 and self.locked == true) then
 		self.locked = false
 		for _, v in ipairs(self.DoorIDs) do
@@ -193,7 +312,14 @@ function map:update()
 		self:despawnroom(self.curRoomIndex)
 		self:makelayout()
 		self:spawnroom(1)
+
 		playerTransform.position = vector()
+		player.health = math.min(player.health + 20, 100)
+
+		self.curLevel = self.curLevel + 1
+		local element = scene.getComponent(self.levelDisplay, ComponentType.UIElement)
+		element.text = tostring(self.curLevel)
+		scene.setComponent(self.levelDisplay, ComponentType.UIElement, element)
 	end
 	scene.setComponent(self.playerID, ComponentType.Transform, playerTransform)
 end

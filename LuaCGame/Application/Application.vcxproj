@@ -194,6 +194,7 @@
   <ItemGroup>
     <None Include="Scripts\Behaviour\bullet.lua" />
     <None Include="Scripts\Behaviour\enemy.lua" />
+    <None Include="Scripts\Behaviour\intMenu.lua" />
     <None Include="Scripts\Behaviour\mainMenu.lua" />
     <None Include="Scripts\Behaviour\map.lua" />
     <None Include="Scripts\Behaviour\player.lua" />

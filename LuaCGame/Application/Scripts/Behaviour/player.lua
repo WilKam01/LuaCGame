@@ -12,10 +12,17 @@ function boolToInt(t)
 end
 
 function player:init()
-	print("Player created! (ID: " .. self.ID .. ")")
+	self.health = 100
+	self.damageCooldown = 0
+	self.shootCooldown = 0
 end
 
 function player:update(deltaTime)
+	local map = scene.getComponent(self.mapID, ComponentType.Behaviour)
+	if(map.paused) then
+		return
+	end
+
 	local dir = vector(
 		boolToInt(input.isKeyDown(Keys.A)) - boolToInt(input.isKeyDown(Keys.D)), 0,
 		boolToInt(input.isKeyDown(Keys.W)) - boolToInt(input.isKeyDown(Keys.S)))
@@ -45,11 +52,28 @@ function player:update(deltaTime)
 		local t = scene.getComponent(entity, ComponentType.Transform)
 		t.position = transform.position + lookDir * 0.5
 		scene.setComponent(entity, ComponentType.Transform, t)
+		self.shootCooldown = 0.25
+	end
+
+	if (self.damageCooldown > 0) then
+		self.damageCooldown = self.damageCooldown - deltaTime
+	end
+
+	if (self.shootCooldown > 0) then
+		self.shootCooldown = self.shootCooldown - deltaTime
 	end
 end
 
 function player:collision(other)
-	--print(other.type)
+	if (other.type == "Enemy") then
+		if (self.damageCooldown <= 0) then
+			self.health = self.health - 20
+			self.damageCooldown = 0.5
+		end
+		local transform = scene.getComponent(self.ID, ComponentType.Transform)
+		transform.position = transform.position - self.lastMove
+		scene.setComponent(self.ID, ComponentType.Transform, transform)
+	end
 end
 
 return player

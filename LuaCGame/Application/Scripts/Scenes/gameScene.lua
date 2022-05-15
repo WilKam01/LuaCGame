@@ -15,5 +15,6 @@ scene.setComponent(entity, ComponentType.Behaviour, "map.lua")
 
 local map = scene.getComponent(entity, ComponentType.Behaviour)
 map.playerID = playerEntity
+scene.getComponent(playerEntity, ComponentType.Behaviour).mapID = entity
 map:makelayout()
 map:spawnroom(1)

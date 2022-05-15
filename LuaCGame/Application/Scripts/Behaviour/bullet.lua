@@ -3,11 +3,10 @@ local bullet = {}
 bullet.type = "Bullet"
 bullet.timer = 0.25
 bullet.speed = 35
-bullet.damage = 0
+bullet.damage = 40
 bullet.velocity = vector(0, 0, 1)
 
 function bullet:init()
-	print("Bullet fired! (ID: " .. self.ID .. ")")
 	scene.setComponent(self.ID, ComponentType.MeshComp, "Bullet")
 end
 
@@ -24,7 +23,8 @@ function bullet:update(deltaTime)
 end
 
 function bullet:collision(other)
-	if(other.type ~= "Player") then
+	if(other.type == "Enemy") then
+		other.health = other.health - self.damage
 		scene.removeEntity(self.ID)
 	end
 end

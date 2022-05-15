@@ -8,12 +8,13 @@ struct UIElement
 {
 	bool visibleBG;
 	std::string text;
+	int fontSize;
 	Vector2 position;
 	Vector2 dimensions;
 	Color colour;
 
 	UIElement():
-		visibleBG(true), position({ 0.0f, 0.0f }), dimensions({ 100.0f, 100.0f }), colour(RAYWHITE)
+		visibleBG(true), fontSize(36), position({ 0.0f, 0.0f }), dimensions({ 100.0f, 100.0f }), colour(RAYWHITE)
 	{}
 };
 
@@ -29,6 +30,10 @@ static UIElement lua_touielement(lua_State* L, int index)
 
 	lua_getfield(L, index, "visibleBG");
 	elem.visibleBG = lua_toboolean(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "fontSize");
+	elem.fontSize = lua_tointeger(L, -1);
 	lua_pop(L, 1);
 
 	lua_getfield(L, index, "text");
@@ -61,6 +66,9 @@ static void lua_pushuielement(lua_State* L, const UIElement& element)
 
 	lua_pushboolean(L, element.visibleBG);
 	lua_setfield(L, -2, "visibleBG");
+
+	lua_pushinteger(L, element.fontSize);
+	lua_setfield(L, -2, "fontSize");
 
 	lua_pushstring(L, element.text.c_str());
 	lua_setfield(L, -2, "text");

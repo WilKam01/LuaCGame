@@ -94,11 +94,11 @@ void Scene::render()
 	{
 		if(elem.visibleBG)
 			DrawRectangle(elem.position.x, elem.position.y, elem.dimensions.x, elem.dimensions.y, elem.colour);
-		Vector2 size = MeasureTextEx(GetFontDefault(), elem.text.c_str(), 36, 1);
+		Vector2 size = MeasureTextEx(GetFontDefault(), elem.text.c_str(), elem.fontSize, 1);
 		DrawText(elem.text.c_str(), 
 			elem.position.x + (elem.dimensions.x - size.x) * 0.5f, 
 			elem.position.y + (elem.dimensions.y - size.y) * 0.5f, 
-			36, WHITE);
+			elem.fontSize, WHITE);
 	});
 }
 

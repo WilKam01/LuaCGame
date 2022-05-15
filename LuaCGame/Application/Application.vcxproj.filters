@@ -99,5 +99,6 @@
     <None Include="Scripts\Behaviour\mainMenu.lua" />
     <None Include="Scripts\Scenes\roomScene.lua" />
     <None Include="Scripts\Behaviour\roomMenu.lua" />
+    <None Include="Scripts\Behaviour\intMenu.lua" />
   </ItemGroup>
 </Project>
