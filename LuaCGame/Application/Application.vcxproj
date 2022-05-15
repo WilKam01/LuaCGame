@@ -197,9 +197,11 @@
     <None Include="Scripts\Behaviour\mainMenu.lua" />
     <None Include="Scripts\Behaviour\map.lua" />
     <None Include="Scripts\Behaviour\player.lua" />
+    <None Include="Scripts\Behaviour\roomMenu.lua" />
     <None Include="Scripts\room.lua" />
     <None Include="Scripts\Scenes\gameScene.lua" />
     <None Include="Scripts\Scenes\menuScene.lua" />
+    <None Include="Scripts\Scenes\roomScene.lua" />
     <None Include="Scripts\vector.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

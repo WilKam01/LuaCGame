@@ -64,8 +64,6 @@ function room.newFromFile(path)
 		end
 	end
 
-	print(width)
-	print(height)
 	for _, v in ipairs(doors) do
 		v.x = width - v.x + 1
 		v.y = height - v.y + 1

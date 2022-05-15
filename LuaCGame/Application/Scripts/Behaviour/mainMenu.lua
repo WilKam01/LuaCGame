@@ -2,11 +2,14 @@ local menu = {}
 local element = {}
 
 function menu:init()
+	self.colour = vector(162, 237, 255)
+	self.hoverColour = vector(212, 247, 255)
+	
 	element.visibleBG = true
 	element.text = ""
 	element.position = vector(490, 200)
 	element.dimensions = vector(300, 100)
-	element.colour = vector(200, 200, 200)
+	element.colour = self.colour
 
 	element.text = "Play!"
 	self.playButton = scene.createEntity()
@@ -26,39 +29,39 @@ end
 function menu:update(deltaTime)
 	local button = scene.getComponent(self.playButton, ComponentType.UIElement)
 	if (UI.isHover(button)) then
-		button.colour = vector(225, 225, 225)
+		button.colour = self.hoverColour
 		scene.setComponent(self.playButton, ComponentType.UIElement, button)
 		if (input.isMouseButtonPressed(Mouse.LEFT)) then
 			scene.setScene("gameScene.lua")
 			return
 		end
-	elseif (button.colour == vector(225, 225, 225)) then
-		button.colour = vector(200, 200, 200)
+	elseif (button.colour == self.hoverColour) then
+		button.colour = self.colour
 		scene.setComponent(self.playButton, ComponentType.UIElement, button)
 	end
 
 	button = scene.getComponent(self.roomButton, ComponentType.UIElement)
 	if (UI.isHover(button)) then
-		button.colour = vector(225, 225, 225)
+		button.colour = self.hoverColour
 		scene.setComponent(self.roomButton, ComponentType.UIElement, button)
 		if (input.isMouseButtonPressed(Mouse.LEFT)) then
-			--scene.setScene("gameScene.lua")
-			--return
+			scene.setScene("roomScene.lua")
+			return
 		end
-	elseif (button.colour == vector(225, 225, 225)) then
-		button.colour = vector(200, 200, 200)
+	elseif (button.colour == self.hoverColour) then
+		button.colour = self.colour
 		scene.setComponent(self.roomButton, ComponentType.UIElement, button)
 	end
 
 	button = scene.getComponent(self.exitButton, ComponentType.UIElement)
 	if (UI.isHover(button)) then
-		button.colour = vector(225, 225, 225)
+		button.colour = self.hoverColour
 		scene.setComponent(self.exitButton, ComponentType.UIElement, button)
 		if (input.isMouseButtonPressed(Mouse.LEFT)) then
 			scene.quit()
 		end
-	elseif (button.colour == vector(225, 225, 225)) then
-		button.colour = vector(200, 200, 200)
+	elseif (button.colour == self.hoverColour) then
+		button.colour = self.colour
 		scene.setComponent(self.exitButton, ComponentType.UIElement, button)
 	end
 end
