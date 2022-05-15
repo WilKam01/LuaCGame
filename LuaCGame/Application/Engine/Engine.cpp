@@ -37,11 +37,12 @@ Engine::Engine(Vector2 dimensions):
 	this->lua_openmetatables(this->L);
 	Scene::lua_openscene(this->L, &this->scene);
 	Input::lua_openinput(this->L, &this->input);
+	UserInterface::lua_openui(this->L, &this->UI);
 
 	this->scene.getResources().loadPrimitives();
 	this->scene.createSystem<BehaviourSystem>(this->L);
 	this->scene.createSystem<CollisionSystem>(this->L, &this->scene.getResources());
-	this->scene.setScene(this->L, "scene.lua");
+	this->scene.setScene(this->L, "menuScene.lua");
 }
 
 Engine::~Engine()
@@ -52,7 +53,7 @@ Engine::~Engine()
 
 void Engine::run()
 {
-	while (!WindowShouldClose())
+	while (!WindowShouldClose() && !this->scene.shouldQuit())
 	{
 		this->update();
 		this->render();

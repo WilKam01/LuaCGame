@@ -1,7 +1,8 @@
 #include "Scene.h"
 #include "Dev/StringHelper.h"
 
-Scene::Scene()
+Scene::Scene():
+	quit(false)
 {
 	this->setCamera(Vector3Zero(), Vector3Zero(), 90.0f);
 }
@@ -20,6 +21,7 @@ void Scene::lua_openscene(lua_State* L, Scene* scene)
 		{ "createSystem", lua_createSystem },
 		{ "loadResource", lua_loadResource },
 		{ "setScene", lua_setScene },
+		{ "quit", lua_quit },
 		{ "setCamera", lua_setCamera },
 		{ "getCameraPos", lua_getCameraPos },
 		{ "setCameraPos", lua_setCameraPos },
@@ -85,8 +87,24 @@ void Scene::render()
 			}
 		}
 	});
-
 	EndMode3D();
+
+	auto buttonView = this->reg.view<UIElement>();
+	buttonView.each([&](const UIElement& elem)
+	{
+		if(elem.visibleBG)
+			DrawRectangle(elem.position.x, elem.position.y, elem.dimensions.x, elem.dimensions.y, elem.colour);
+		Vector2 size = MeasureTextEx(GetFontDefault(), elem.text.c_str(), 36, 1);
+		DrawText(elem.text.c_str(), 
+			elem.position.x + (elem.dimensions.x - size.x) * 0.5f, 
+			elem.position.y + (elem.dimensions.y - size.y) * 0.5f, 
+			36, WHITE);
+	});
+}
+
+bool Scene::shouldQuit()
+{
+	return this->quit;
 }
 
 void Scene::setCamera(Vector3 pos, Vector3 rotation, float fov)
@@ -165,11 +183,6 @@ int Scene::lua_createSystem(lua_State* L)
 	Scene* scene = (Scene*)lua_touserdata(L, lua_upvalueindex(1));
 	int type = (int)lua_tointeger(L, 1);
 
-	/*if (systemTypes.at(type) == "CleanUp")
-		scene->createSystem<CleanUp>();*/
-	/*else if (systemTypes.at(type) == "Info")
-		scene->createSystem<CleanUp>();*/
-
 	return 0;
 }
 
@@ -189,6 +202,13 @@ int Scene::lua_setScene(lua_State* L)
 	std::string path = lua_tostring(L, 1);
 	scene->setScene(L, path);
 
+	return 0;
+}
+
+int Scene::lua_quit(lua_State* L)
+{
+	Scene* scene = (Scene*)lua_touserdata(L, lua_upvalueindex(1));
+	scene->quit = true;
 	return 0;
 }
 
@@ -264,6 +284,8 @@ int Scene::lua_hasComponent(lua_State* L)
 		hasComp = scene->hasComponents<TransformComp>(entity);
 	else if (compTypes.at(type) == "Behaviour")
 		hasComp = scene->hasComponents<Behaviour>(entity);
+	else if (compTypes.at(type) == "UIElement")
+		hasComp = scene->hasComponents<UIElement>(entity);
 
 	lua_pushboolean(L, hasComp);
 	return 1;
@@ -279,6 +301,8 @@ int Scene::lua_getComponent(lua_State* L)
 		lua_pushtransform(L, scene->getComponent<TransformComp>(entity));
 	else if (compTypes.at(type) == "Behaviour" && scene->hasComponents<Behaviour>(entity))
 		lua_rawgeti(L, LUA_REGISTRYINDEX, scene->getComponent<Behaviour>(entity).luaRef);
+	else if (compTypes.at(type) == "UIElement" && scene->hasComponents<UIElement>(entity))
+		lua_pushuielement(L, scene->getComponent<UIElement>(entity));
 	else
 		lua_pushnil(L);
 
@@ -295,6 +319,14 @@ int Scene::lua_setComponent(lua_State* L)
 		scene->setComponent<TransformComp>(entity, lua_totransform(L, 3));
 	else if (compTypes.at(type) == "MeshComp")
 		scene->setComponent<MeshComp>(entity, lua_tostring(L, 3));
+	else if (compTypes.at(type) == "UIElement")
+	{
+		UIElement elem = lua_touielement(L, 3);
+		if(elem.dimensions.x == 0 && elem.dimensions.y == 0)
+			scene->setComponent<UIElement>(entity);
+		else
+			scene->setComponent<UIElement>(entity, lua_touielement(L, 3));
+	}
 	else if (compTypes.at(type) == "Behaviour")
 	{
 		if (scene->hasComponents<Behaviour>(entity))
@@ -345,6 +377,8 @@ int Scene::lua_removeComponent(lua_State* L)
 		scene->removeComponent<Behaviour>(entity);
 	else if (compTypes.at(type) == "MeshComp" && scene->hasComponents<MeshComp>(entity))
 		scene->removeComponent<MeshComp>(entity);
+	else if (compTypes.at(type) == "UIElement" && scene->hasComponents<UIElement>(entity))
+		scene->removeComponent<UIElement>(entity);
 
 	return 0;
 }

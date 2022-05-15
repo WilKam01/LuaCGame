@@ -21,22 +21,23 @@ private:
 	Resources resources;
 	std::vector<System*> systems;
 	CameraStruct cam;
+	bool quit;
 
 	inline static const std::vector<std::string> compTypes{
 		"Transform",
 		"MeshComp",
-		"Behaviour"
+		"Behaviour",
+		"UIElement"
 	};
 
 	inline static const std::vector<std::string> systemTypes{
-		"CleanUp",
-		"Info"
 	};
 
 	// Lua wrappers
 	static int lua_createSystem(lua_State* L);
 	static int lua_loadResource(lua_State* L);
 	static int lua_setScene(lua_State* L);
+	static int lua_quit(lua_State* L);
 
 	static int lua_setCamera(lua_State* L);
 	static int lua_getCameraPos(lua_State* L);
@@ -61,6 +62,7 @@ public:
 	// @param Name of lua script to open scene
 	void setScene(lua_State* L, std::string path);
 	void render();
+	bool shouldQuit();
 
 	inline Resources& getResources() { return this->resources; }
 	void setCamera(Vector3 pos, Vector3 rotation, float fov);

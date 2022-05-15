@@ -36,7 +36,7 @@ function player:update(deltaTime)
 
 	scene.setComponent(self.ID, ComponentType.Transform, transform)
 
-	if(input.isMouseButtonPressed(Mouse.LEFT)) then
+	if (input.isMouseButtonPressed(Mouse.LEFT)) then
 		local entity = scene.createEntity()
 		scene.setComponent(entity, ComponentType.Behaviour, "bullet.lua")
 		local bullet = scene.getComponent(entity, ComponentType.Behaviour)

@@ -170,9 +170,11 @@
     <ClCompile Include="Engine\Scene.cpp" />
     <ClCompile Include="Engine\Input.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Engine\UserInterface.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Components\Behaviour.h" />
+    <ClInclude Include="Engine\Components\UIElement.h" />
     <ClInclude Include="Engine\Components\Componentpch.h" />
     <ClInclude Include="Engine\Components\MeshComp.h" />
     <ClInclude Include="Engine\Components\TransformComp.h" />
@@ -186,14 +188,18 @@
     <ClInclude Include="Engine\Systems\System.h" />
     <ClInclude Include="Engine\Input.h" />
     <ClInclude Include="Engine\Systems\Systempch.h" />
+    <ClInclude Include="UI.h" />
+    <ClInclude Include="Engine\UserInterface.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\Behaviour\bullet.lua" />
     <None Include="Scripts\Behaviour\enemy.lua" />
+    <None Include="Scripts\Behaviour\mainMenu.lua" />
     <None Include="Scripts\Behaviour\map.lua" />
     <None Include="Scripts\Behaviour\player.lua" />
     <None Include="Scripts\room.lua" />
-    <None Include="Scripts\Scenes\scene.lua" />
+    <None Include="Scripts\Scenes\gameScene.lua" />
+    <None Include="Scripts\Scenes\menuScene.lua" />
     <None Include="Scripts\vector.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

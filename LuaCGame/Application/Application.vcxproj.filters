@@ -30,6 +30,9 @@
     <ClCompile Include="Engine\Input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\UserInterface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Engine.h">
@@ -74,14 +77,25 @@
     <ClInclude Include="Engine\Systems\CollisionSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Components\UIElement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\UserInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\vector.lua" />
-    <None Include="Scripts\Scenes\scene.lua" />
+    <None Include="Scripts\Scenes\gameScene.lua" />
     <None Include="Scripts\Behaviour\player.lua" />
     <None Include="Scripts\Behaviour\bullet.lua" />
     <None Include="Scripts\Behaviour\map.lua" />
     <None Include="Scripts\room.lua" />
     <None Include="Scripts\Behaviour\enemy.lua" />
+    <None Include="Scripts\Scenes\menuScene.lua" />
+    <None Include="Scripts\Behaviour\mainMenu.lua" />
   </ItemGroup>
 </Project>
