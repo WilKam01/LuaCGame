@@ -188,7 +188,6 @@
     <ClInclude Include="Engine\Systems\System.h" />
     <ClInclude Include="Engine\Input.h" />
     <ClInclude Include="Engine\Systems\Systempch.h" />
-    <ClInclude Include="UI.h" />
     <ClInclude Include="Engine\UserInterface.h" />
   </ItemGroup>
   <ItemGroup>

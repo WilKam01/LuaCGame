@@ -186,6 +186,17 @@ function map:update()
 		if (UI.isHover(button) and input.isMouseButtonPressed(Mouse.LEFT) and player.health > 0) then
 			self.paused = false
 			menu:destroy()
+
+			-- Put back Game UI
+			local element = scene.getComponent(self.levelDisplay, ComponentType.UIElement)
+			element.position = vector(0, 0)
+			scene.setComponent(self.levelDisplay, ComponentType.UIElement, element)
+			element = scene.getComponent(self.healthbar, ComponentType.UIElement)
+			element.position = vector(340, 650)
+			scene.setComponent(self.healthbar, ComponentType.UIElement, element)
+			element = scene.getComponent(self.healthBG, ComponentType.UIElement)
+			element.position = vector(340, 650)
+			scene.setComponent(self.healthBG, ComponentType.UIElement, element)
 		elseif (UI.isHover(button) and input.isMouseButtonPressed(Mouse.LEFT) and player.health <= 0) then
 			scene.setScene("gameScene.lua")
 			return
