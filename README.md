@@ -22,7 +22,7 @@ Crimson Rush is a *dungeon-crawler* and *rougelike* inspired game all about expl
 The map that is being explored by the player has a start and exit room. When the player reaches the exit room and exits, the map is recreated and a new level has been reached. The player also get a little health boost.
 This is repeated until the player is dead and after a screen showing the level reached is shown.
 
-<img src="../assets/Enemy.png" alt="drawing" width="500"/> <img src="../assets/ExitRoom.png" alt="drawing" width="500"/>
+![Room Example](../assets/Enemy.png)
  
 ### Room creator
 The game also comes with a room creator where the width, height and placement for doors and enemies can be decided. After deciding width and height a grid of tiles are created. The edges of the room are defined as walls and the rest floor. Left clicking the tiles changes the state of it. Floor tiles can change to enemy tiles and wall tiles can change to doors and vice versa. The colour of the tile represent the state of it.
