@@ -43,6 +43,6 @@ void Resources::loadModel(std::string path, std::string name)
 		return;
 	}
 
-	Model model = LoadModel(("../Resources/Models/" + path).c_str());
+	Model model = LoadModel(("Resources/Models/" + path).c_str());
 	this->models.insert(std::pair<std::string, Model>(name, model));
 }

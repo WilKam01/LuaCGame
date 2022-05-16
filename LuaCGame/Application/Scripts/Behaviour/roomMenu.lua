@@ -148,9 +148,9 @@ function menu:update(deltaTime)
 			local counter = 0
 			while(r ~= nil) do
 				counter = counter + 1
-				r = room.newFromFile("../Resources/Rooms/" .. tostring(counter) .. ".room")
+				r = room.newFromFile("Resources/Rooms/" .. tostring(counter) .. ".room")
 			end
-			local f = io.open("../Resources/Rooms/" .. tostring(counter) .. ".room", "w")
+			local f = io.open("Resources/Rooms/" .. tostring(counter) .. ".room", "w")
 			if (f) then 
 				local index = 1
 				for i = 1, self.height do

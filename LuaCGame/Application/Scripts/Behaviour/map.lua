@@ -129,12 +129,12 @@ end
 function map:init()
 	self.roomTemplates = {}
 	table.insert(self.roomTemplates, self.template)
-	local r = room.newFromFile("../Resources/Rooms/1.room")
+	local r = room.newFromFile("Resources/Rooms/1.room")
 	local counter = 2
 
 	while(r ~= nil) do
 		table.insert(self.roomTemplates, r)
-		r = room.newFromFile("../Resources/Rooms/" .. tostring(counter) .. ".room")
+		r = room.newFromFile("Resources/Rooms/" .. tostring(counter) .. ".room")
 		counter = counter + 1
 	end
 
