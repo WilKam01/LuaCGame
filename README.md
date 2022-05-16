@@ -20,7 +20,9 @@ List of functions that are exposed to and used in the lua scripts
 Crimson Rush is a *dungeon-crawler* and *rougelike* inspired game all about exploring rooms and surviving as long as possible. The game is in *top-down-view* and the player has a pistol used to kill enemies encountered in the different rooms. When entering a room, the doors locks until the player has defeated all enemies. The player is damaged when coming in contact with an enemy
 
 The map that is being explored by the player has a start and exit room. When the player reaches the exit room and exits, the map is recreated and a new level has been reached. The player also get a little health boost.
- This is repeated until the player is dead and after a screen showing the level reached is shown.
+This is repeated until the player is dead and after a screen showing the level reached is shown.
+
+<img src="../assets/Enemy.png" alt="drawing" width="500"/> <img src="../assets/ExitRoom.png" alt="drawing" width="500"/>
  
 ### Room creator
 The game also comes with a room creator where the width, height and placement for doors and enemies can be decided. After deciding width and height a grid of tiles are created. The edges of the room are defined as walls and the rest floor. Left clicking the tiles changes the state of it. Floor tiles can change to enemy tiles and wall tiles can change to doors and vice versa. The colour of the tile represent the state of it.
@@ -31,7 +33,10 @@ The game also comes with a room creator where the width, height and placement fo
 * 🟦 : Wall
 * 🟨 : Door
 
+![Room Creator](../assets/Room.png)
+
 After saving a room, the contents is stored using self defined format called *.room*. This file format use different characters to define the states of the tiles in the room.
+
 **Example:**
 
     ----+----
